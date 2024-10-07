@@ -1,0 +1,39 @@
+# docker-compose.yml
+
+services:
+  odoo:
+    build: .
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "8069:8069"
+    environment:
+      - HOST=db
+      - USER=odoo
+      - PASSWORD=odoo
+      - POSTGRES_DB=postgres
+    volumes:
+      - odoo-web-data:/var/lib/odoo
+      #- ./config:/etc/odoo  # odoo configutation
+      #- ./addons:/mnt/extra-addons  # optional for addons
+    networks:
+      - odoo-network
+  db:
+    image: postgres:17
+    restart: always
+    shm_size: '512mb'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=odoo
+      - POSTGRES_PASSWORD=odoo
+    networks:
+      - odoo-network
+
+networks:
+  odoo-network:
+
+volumes:
+  postgres_data:
+  odoo-web-data:
